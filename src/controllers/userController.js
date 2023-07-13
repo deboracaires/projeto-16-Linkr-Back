@@ -27,3 +27,25 @@ export async function getUserById(req, res) {
     res.send(500)
   }
 }
+
+export async function updateUser(req, res) {
+  try {
+    const { email, password, name, url } = req.body
+    
+    const id = res.locals.user.id
+
+    if (email) {
+      const user = await userRepository.verifyEmail(email)
+      if (user && (user.id !== id)) return res.sendStatus(409)
+    }
+    const response = await userRepository.updateUserInfo(id, email, password, name, url)
+    
+    if (response) return res.sendStatus(204)
+    
+    return res.sendStatus(200)
+
+  } catch(error) {
+    console.log(error)
+    return res.send(500)
+  }
+}
